@@ -20,7 +20,7 @@ function Symptoms() {
     setRecommendation("");
 
     try {
-      const response = await fetch(`${API_URL}/predict`, {
+      const res = await fetch(`${API_URL}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -30,11 +30,9 @@ function Symptoms() {
         }),
       });
 
-      const data = await response.json();
+      const data = await res.json();
       if (data.recommendation) {
-        setRecommendation(
-          `${data.recommendation} ⚠️ Estas son recomendaciones, no un diagnóstico. Consulta a un médico para confirmación.`
-        );
+        setRecommendation(`${data.recommendation} ⚠️ Esto es solo una sugerencia, consulta a tu médico para un diagnóstico preciso.`);
       } else {
         setRecommendation("No se pudo generar una recomendación.");
       }
@@ -52,14 +50,16 @@ function Symptoms() {
           Ingresar Síntomas
         </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <input
-            type="number"
-            placeholder="Temperatura (°C)"
-            value={temperature}
-            onChange={(e) => setTemperature(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg p-3"
-            required
-          />
+          <div>
+            <input
+              type="number"
+              value={temperature}
+              onChange={(e) => setTemperature(e.target.value)}
+              placeholder="Temperatura (°C)"
+              className="w-full border border-gray-300 rounded-lg p-3"
+              required
+            />
+          </div>
 
           <div className="flex items-center gap-2">
             <input
@@ -68,11 +68,11 @@ function Symptoms() {
               onChange={(e) => setCough(e.target.checked)}
               className="h-5 w-5 text-indigo-600"
             />
-            <span className="text-gray-700">¿Presenta tos?</span>
+            <span>¿Presenta tos?</span>
           </div>
 
           <textarea
-            placeholder="Comentarios (opcional)"
+            placeholder="Comentario (opcional)"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             className="w-full border border-gray-300 rounded-lg p-3"
