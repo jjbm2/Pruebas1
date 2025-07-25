@@ -1,60 +1,62 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
-const API_URL = "https://neurosalud.onrender.com";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${API_URL}/login`, {
+      const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
-      const data = await res.json();
+      const data = await response.json();
       if (data.success) {
-        setMessage("Inicio de sesión exitoso.");
-        navigate("/symptoms");
+        setMessage("Inicio de sesión exitoso ✅");
       } else {
-        setMessage(data.message || "Credenciales incorrectas");
+        setMessage(data.message || "Error en el inicio de sesión ❌");
       }
     } catch (error) {
-      setMessage("Error al conectar con el servidor");
+      setMessage("Error de conexión con el servidor.");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-indigo-600 p-6">
-      <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center text-indigo-700 mb-6">Iniciar Sesión</h1>
-        <form onSubmit={handleLogin} className="space-y-6">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-purple-600 to-blue-500">
+      <div className="bg-white rounded-2xl shadow-xl p-8 w-96">
+        <h1 className="text-3xl font-bold text-center text-indigo-600 mb-6">
+          Iniciar Sesión
+        </h1>
+        <form onSubmit={handleLogin} className="space-y-4">
           <input
             type="text"
             placeholder="Usuario"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg p-3"
-            required
+            className="w-full border p-3 rounded-lg"
           />
           <input
             type="password"
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg p-3"
-            required
+            className="w-full border p-3 rounded-lg"
           />
-          <button type="submit" className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition">
-            Entrar
+          <button
+            type="submit"
+            className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition"
+          >
+            Iniciar Sesión
           </button>
         </form>
-        {message && <p className="mt-4 text-center text-red-500">{message}</p>}
+        {message && (
+          <p className="text-center text-sm mt-4 text-gray-700">{message}</p>
+        )}
       </div>
     </div>
   );

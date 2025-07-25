@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API_URL = "https://neurosalud.onrender.com";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function Symptoms() {
   const [temperature, setTemperature] = useState("");
@@ -12,7 +12,7 @@ function Symptoms() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!temperature) {
-      alert("Por favor, ingresa la temperatura");
+      alert("Por favor ingresa la temperatura");
       return;
     }
 
@@ -20,19 +20,21 @@ function Symptoms() {
     setRecommendation("");
 
     try {
-      const res = await fetch(`${API_URL}/predict`, {
+      const response = await fetch(`${API_URL}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           temperature: parseFloat(temperature),
-          cough: cough,
-          comment: comment,
+          cough,
+          comment,
         }),
       });
 
-      const data = await res.json();
+      const data = await response.json();
       if (data.recommendation) {
-        setRecommendation(`${data.recommendation} ⚠️ Esto es solo una sugerencia, consulta a tu médico para un diagnóstico preciso.`);
+        setRecommendation(
+          `${data.recommendation} ⚠️ Esto es solo una recomendación, acude a un médico para diagnóstico preciso.`
+        );
       } else {
         setRecommendation("No se pudo generar una recomendación.");
       }
@@ -44,41 +46,34 @@ function Symptoms() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-500 to-indigo-600 p-6">
-      <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center text-indigo-700 mb-6">
-          Ingresar Síntomas
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-purple-600 to-indigo-500">
+      <div className="bg-white rounded-2xl shadow-xl p-8 w-96">
+        <h1 className="text-3xl font-bold text-center text-indigo-600 mb-6">
+          Síntomas
         </h1>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <input
-              type="number"
-              value={temperature}
-              onChange={(e) => setTemperature(e.target.value)}
-              placeholder="Temperatura (°C)"
-              className="w-full border border-gray-300 rounded-lg p-3"
-              required
-            />
-          </div>
-
-          <div className="flex items-center gap-2">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="number"
+            placeholder="Temperatura (°C)"
+            value={temperature}
+            onChange={(e) => setTemperature(e.target.value)}
+            className="w-full border p-3 rounded-lg"
+          />
+          <div className="flex items-center">
             <input
               type="checkbox"
               checked={cough}
-              onChange={(e) => setCough(e.target.checked)}
-              className="h-5 w-5 text-indigo-600"
+              onChange={() => setCough(!cough)}
+              className="mr-2"
             />
-            <span>¿Presenta tos?</span>
+            <label>¿Presenta tos?</label>
           </div>
-
           <textarea
             placeholder="Comentario (opcional)"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg p-3"
-            rows={3}
+            className="w-full border p-3 rounded-lg"
           />
-
           <button
             type="submit"
             disabled={loading}
@@ -87,9 +82,8 @@ function Symptoms() {
             {loading ? "Analizando..." : "Obtener Recomendación"}
           </button>
         </form>
-
         {recommendation && (
-          <div className="mt-6 p-4 bg-green-100 border border-green-200 rounded-lg text-green-700 font-semibold text-center">
+          <div className="mt-4 bg-green-100 p-4 rounded-lg text-green-700 font-semibold">
             {recommendation}
           </div>
         )}
