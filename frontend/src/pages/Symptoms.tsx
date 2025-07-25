@@ -11,7 +11,6 @@ function Symptoms() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!temperature) {
       alert("Por favor, ingresa la temperatura");
       return;
@@ -26,15 +25,15 @@ function Symptoms() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           temperature: parseFloat(temperature),
-          cough,
-          comment,
+          cough: cough,
+          comment: comment,
         }),
       });
 
       const data = await response.json();
       if (data.recommendation) {
         setRecommendation(
-          `${data.recommendation} ⚠️ Esto es solo una recomendación, para un diagnóstico preciso visita a un médico.`
+          `${data.recommendation} ⚠️ Estas son recomendaciones, no un diagnóstico. Consulta a un médico para confirmación.`
         );
       } else {
         setRecommendation("No se pudo generar una recomendación.");
@@ -50,22 +49,17 @@ function Symptoms() {
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-500 to-indigo-600 p-6">
       <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md">
         <h1 className="text-3xl font-bold text-center text-indigo-700 mb-6">
-          NeuroSalud
+          Ingresar Síntomas
         </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
-              Temperatura (°C)
-            </label>
-            <input
-              type="number"
-              value={temperature}
-              onChange={(e) => setTemperature(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg p-3 bg-white text-gray-900 focus:ring focus:ring-indigo-300"
-              placeholder="Ej. 37.5"
-              required
-            />
-          </div>
+          <input
+            type="number"
+            placeholder="Temperatura (°C)"
+            value={temperature}
+            onChange={(e) => setTemperature(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg p-3"
+            required
+          />
 
           <div className="flex items-center gap-2">
             <input
@@ -77,23 +71,18 @@ function Symptoms() {
             <span className="text-gray-700">¿Presenta tos?</span>
           </div>
 
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
-              Comentarios
-            </label>
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg p-3 bg-white text-gray-900 focus:ring focus:ring-indigo-300"
-              rows={3}
-              placeholder="Agrega detalles adicionales"
-            />
-          </div>
+          <textarea
+            placeholder="Comentarios (opcional)"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg p-3"
+            rows={3}
+          />
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition font-semibold"
+            className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition"
           >
             {loading ? "Analizando..." : "Obtener Recomendación"}
           </button>

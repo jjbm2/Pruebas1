@@ -1,20 +1,15 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const API_URL = "https://neurosalud.onrender.com";
 
 function Register() {
-  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [message, setMessage] = useState("");
 
-  const handleRegister = async () => {
-    if (!username || !password) {
-      setError("Por favor, completa todos los campos");
-      return;
-    }
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMessage("");
 
     try {
       const response = await fetch(`${API_URL}/register`, {
@@ -25,51 +20,52 @@ function Register() {
 
       const data = await response.json();
       if (data.success) {
-        setSuccess("Usuario registrado exitosamente. Redirigiendo...");
-        setTimeout(() => navigate("/"), 2000);
+        setMessage("Usuario registrado exitosamente ✅");
+        // Redirige a Login
+        setTimeout(() => (window.location.href = "/login"), 1500);
       } else {
-        setError(data.message || "Error al registrar usuario");
+        setMessage(data.message || "Error en el registro ❌");
       }
-    } catch (err) {
-      setError("Error en el servidor");
+    } catch (error) {
+      setMessage("Error al conectar con el servidor.");
     }
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gradient-to-br from-green-400 to-blue-500">
-      <div className="bg-white shadow-2xl rounded-2xl p-8 w-96 text-center">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">
-          Crear cuenta en <span className="text-green-600">NeuroSalud</span>
-        </h1>
-        <input
-          type="text"
-          placeholder="Usuario"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="border rounded-lg p-3 w-full mb-4 focus:ring focus:ring-green-300"
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="border rounded-lg p-3 w-full mb-4 focus:ring focus:ring-green-300"
-        />
-        {error && <p className="text-red-500 mb-4">{error}</p>}
-        {success && <p className="text-green-500 mb-4">{success}</p>}
-        <button
-          onClick={handleRegister}
-          className="bg-green-600 text-white px-6 py-3 rounded-lg w-full hover:bg-green-700 transition"
-        >
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-500 to-teal-600 p-6">
+      <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md">
+        <h1 className="text-3xl font-bold text-center text-green-700 mb-6">
           Registrarse
-        </button>
-        <p className="mt-4 text-gray-500">¿Ya tienes cuenta?</p>
-        <button
-          onClick={() => navigate("/")}
-          className="bg-blue-500 text-white px-6 py-3 rounded-lg w-full hover:bg-blue-600 transition mt-3"
-        >
-          Iniciar Sesión
-        </button>
+        </h1>
+        <form onSubmit={handleRegister} className="space-y-6">
+          <input
+            type="text"
+            placeholder="Usuario"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg p-3 bg-white text-gray-900 focus:ring focus:ring-green-300"
+            required
+          />
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg p-3 bg-white text-gray-900 focus:ring focus:ring-green-300"
+            required
+          />
+          <button
+            type="submit"
+            className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition font-semibold"
+          >
+            Registrarse
+          </button>
+        </form>
+        {message && (
+          <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800 font-semibold text-center">
+            {message}
+          </div>
+        )}
       </div>
     </div>
   );
