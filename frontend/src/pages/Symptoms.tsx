@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+const API_URL = "https://neurosalud.onrender.com";
+
 function Symptoms() {
   const [temperature, setTemperature] = useState("");
   const [cough, setCough] = useState(false);
@@ -9,6 +11,7 @@ function Symptoms() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!temperature) {
       alert("Por favor, ingresa la temperatura");
       return;
@@ -18,7 +21,7 @@ function Symptoms() {
     setRecommendation("");
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/predict", {
+      const response = await fetch(`${API_URL}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -30,11 +33,13 @@ function Symptoms() {
 
       const data = await response.json();
       if (data.recommendation) {
-        setRecommendation(data.recommendation);
+        setRecommendation(
+          `${data.recommendation} ⚠️ Esto es solo una recomendación, para un diagnóstico preciso visita a un médico.`
+        );
       } else {
         setRecommendation("No se pudo generar una recomendación.");
       }
-    } catch {
+    } catch (error) {
       setRecommendation("Error al conectar con el servidor.");
     } finally {
       setLoading(false);
@@ -48,14 +53,20 @@ function Symptoms() {
           NeuroSalud
         </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <input
-            type="number"
-            placeholder="Temperatura (°C)"
-            value={temperature}
-            onChange={(e) => setTemperature(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg p-3 bg-white text-gray-900 focus:ring focus:ring-indigo-300"
-            required
-          />
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">
+              Temperatura (°C)
+            </label>
+            <input
+              type="number"
+              value={temperature}
+              onChange={(e) => setTemperature(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg p-3 bg-white text-gray-900 focus:ring focus:ring-indigo-300"
+              placeholder="Ej. 37.5"
+              required
+            />
+          </div>
+
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -65,13 +76,20 @@ function Symptoms() {
             />
             <span className="text-gray-700">¿Presenta tos?</span>
           </div>
-          <textarea
-            placeholder="Agrega detalles adicionales"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg p-3 bg-white text-gray-900 focus:ring focus:ring-indigo-300"
-            rows={3}
-          />
+
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">
+              Comentarios
+            </label>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg p-3 bg-white text-gray-900 focus:ring focus:ring-indigo-300"
+              rows={3}
+              placeholder="Agrega detalles adicionales"
+            />
+          </div>
+
           <button
             type="submit"
             disabled={loading}
@@ -80,6 +98,7 @@ function Symptoms() {
             {loading ? "Analizando..." : "Obtener Recomendación"}
           </button>
         </form>
+
         {recommendation && (
           <div className="mt-6 p-4 bg-green-100 border border-green-200 rounded-lg text-green-700 font-semibold text-center">
             {recommendation}

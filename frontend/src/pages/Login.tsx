@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const API_URL = "https://neurosalud.onrender.com";
+
 function Login() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
@@ -14,7 +16,7 @@ function Login() {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/login", {
+      const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -30,10 +32,6 @@ function Login() {
     } catch (err) {
       setError("Error en el servidor");
     }
-  };
-
-  const handleICPLogin = () => {
-    alert("En la siguiente fase implementaremos ICP Login");
   };
 
   return (
@@ -69,12 +67,6 @@ function Login() {
           className="bg-green-500 text-white px-6 py-3 rounded-lg w-full hover:bg-green-600 transition mt-3"
         >
           Registrarse
-        </button>
-        <button
-          onClick={handleICPLogin}
-          className="bg-purple-600 text-white px-6 py-3 rounded-lg w-full hover:bg-purple-700 transition mt-3"
-        >
-          Iniciar sesión con ICP
         </button>
       </div>
     </div>
