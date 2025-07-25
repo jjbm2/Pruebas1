@@ -5,6 +5,9 @@ from model import predict_health, train_model
 
 app = Flask(__name__)
 CORS(app)
+@app.route('/')
+def home():
+    return "✅ API NeuroSalud funcionando. Endpoints: /login, /register, /predict"
 
 # ✅ Inicializa la BD
 def init_db():
